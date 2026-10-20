@@ -33,5 +33,5 @@ jobs:
         run: gradle --no-daemon :app:assembleDebug
       - uses: actions/upload-artifact@v4
         with:
-          name: FusionOrbitKey-v0.3.0-debug-apk
+          name: FusionOrbitKey-v0.4.0-debug-apk
           path: app/build/outputs/apk/debug/*.apk
