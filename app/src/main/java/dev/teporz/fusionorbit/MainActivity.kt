@@ -18,7 +18,7 @@ class MainActivity : Activity() {
   super.onCreate(savedInstanceState)
   val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(24,24,24,24) }
   fun button(label: String, onClick: () -> Unit) { root.addView(Button(this).apply { text = label; setOnClickListener { onClick() } }) }
-  root.addView(TextView(this).apply { text = "Fusion Orbit Key — IME Experiment v0.4.0\n\nEnable Fusion Orbit Key IME in system keyboard settings and select it as active keyboard. Enable Accessibility service. In Windows App, hold Volume Down to test Shift via InputConnection. This may not work in a remote desktop canvas."; textSize = 16f })
+  root.addView(TextView(this).apply { text = "Fusion Orbit Key — Gboard-Compatible Diagnostic v0.5.0\n\nKeep Gboard selected. Enable Accessibility service. In Windows App, press and release Volume Down, then inspect the logs. Shift injection is not yet available. No input method changes required."; textSize = 16f })
   button("Open Accessibility Settings") { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
   button("Copy log") { (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("Fusion Orbit Key events", EventLog.lines())) }
   button("Clear log") { EventLog.clear() }
