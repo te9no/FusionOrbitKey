@@ -13,12 +13,12 @@ import android.widget.ScrollView
 import android.widget.TextView
 class MainActivity : Activity() {
  private lateinit var output: TextView
- private val refresh: () -> Unit = { runOnUiThread { output.text = EventLog.lines().ifBlank { "No key events yet. Press and release Snap Key." } } }
+ private val refresh: () -> Unit = { runOnUiThread { output.text = EventLog.lines().ifBlank { "No key events yet. Press Volume Down while Windows App is foreground." } } }
  override fun onCreate(savedInstanceState: Bundle?) {
   super.onCreate(savedInstanceState)
   val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(24,24,24,24) }
   fun button(label: String, onClick: () -> Unit) { root.addView(Button(this).apply { text = label; setOnClickListener { onClick() } }) }
-  root.addView(TextView(this).apply { text = "Fusion Orbit Key — Diagnostic v0.2.0\n\nEnable Accessibility service, then press/release Snap Key. Compare with volume buttons. Events are stored only in memory."; textSize = 16f })
+  root.addView(TextView(this).apply { text = "Fusion Orbit Key — Diagnostic v0.3.0\n\nVolume Down hold tracking is enabled. Shift injection is NOT implemented yet. Volume keys retain normal behavior. Switch to Windows App, hold/release Volume Down, then return and inspect logs."; textSize = 16f })
   button("Open Accessibility Settings") { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
   button("Copy log") { (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("Fusion Orbit Key events", EventLog.lines())) }
   button("Clear log") { EventLog.clear() }
