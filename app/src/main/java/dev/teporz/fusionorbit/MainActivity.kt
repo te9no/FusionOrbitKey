@@ -18,7 +18,7 @@ class MainActivity : Activity() {
   super.onCreate(savedInstanceState)
   val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(24,24,24,24) }
   fun button(label: String, onClick: () -> Unit) { root.addView(Button(this).apply { text = label; setOnClickListener { onClick() } }) }
-  root.addView(TextView(this).apply { text = "Fusion Orbit Key — Diagnostic v0.1\n\nEnable Accessibility service, then press/release Snap Key. Compare with volume buttons. Events are stored only in memory."; textSize = 16f })
+  root.addView(TextView(this).apply { text = "Fusion Orbit Key — Diagnostic v0.2.0\n\nEnable Accessibility service, then press/release Snap Key. Compare with volume buttons. Events are stored only in memory."; textSize = 16f })
   button("Open Accessibility Settings") { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
   button("Copy log") { (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("Fusion Orbit Key events", EventLog.lines())) }
   button("Clear log") { EventLog.clear() }
