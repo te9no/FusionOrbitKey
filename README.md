@@ -1,9 +1,21 @@
 # Fusion Orbit Key
 
-Android diagnostic app for detecting OPPO Find X9 Snap Key DOWN/UP events on ColorOS 16.
+Android app for OPPO Find X9 / ColorOS 16 and Windows App / Fusion 360.
 
-**Status:** v0.1 diagnostic only. No Shift injection yet. No Windows companion required.
+## v0.5.0 (Gboard-compatible diagnostic)
 
-Enable the app's Accessibility service and press/release Snap Key; use volume keys as a control. Copy logs from the app.
+- Detect Volume Down DOWN/UP through AccessibilityService even while Windows App is foreground.
+- Record foreground app changes and held state.
+- **Does not change the default keyboard.**
+- **Does not inject Shift yet.** The Android Accessibility API cannot inject arbitrary keyboard key-down/key-up events into another app. A Shizuku-backed privileged input transport requires separate implementation and validation; `input keyevent --longpress` is not equivalent to holding Shift across mouse drag.
+- Does not consume volume keys until an actual Shift transport is proven.
 
-GitHub Actions builds a debug APK available in workflow artifacts.
+The old experimental `OrbitIme.kt` source is retained for reference but its service is no longer registered in AndroidManifest.xml. Do not select it as the keyboard.
+
+## Test
+
+Enable Fusion Orbit Key Accessibility service. Leave Gboard selected. Open Windows App and hold/release Volume Down. Return to Fusion Orbit Key and copy the event log.
+
+## Build
+
+GitHub Actions -> Android debug APK -> Artifacts -> `FusionOrbitKey-v0.5.0-debug-apk`.
