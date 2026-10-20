@@ -8,49 +8,50 @@ import android.view.accessibility.AccessibilityEvent
 class KeyProbeService : AccessibilityService() {
  private var volumeDownHeld = false
  private var currentPackage = "unknown"
-
  override fun onServiceConnected() {
   super.onServiceConnected()
   val info = serviceInfo
   info.flags = info.flags or AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
   serviceInfo = info
-  EventLog.recordStatus("ACCESSIBILITY connected; filterRequested=" +
-   ((serviceInfo.flags and AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0))
+  EventLog.recordStatus("ACCESSIBILITY connected")
  }
  override fun onAccessibilityEvent(event: AccessibilityEvent?) {
   if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
    val next = event.packageName?.toString() ?: "unknown"
    if (next != currentPackage) {
+    if (currentPackage == "com.microsoft.rdc.androidx" && next != currentPackage) release("window changed")
     currentPackage = next
     EventLog.recordStatus("Foreground package: $currentPackage")
    }
   }
  }
- override fun onInterrupt() {
-  release("service interrupted")
- }
- override fun onDestroy() {
-  release("service destroyed")
-  super.onDestroy()
- }
+ override fun onInterrupt() { release("interrupted") }
+ override fun onDestroy() { release("destroyed"); super.onDestroy() }
  private fun release(reason: String) {
   if (volumeDownHeld) {
    volumeDownHeld = false
+   OrbitIme.release()
    EventLog.recordStatus("ORBIT released ($reason)")
   }
  }
  override fun onKeyEvent(event: KeyEvent): Boolean {
+  if (event.keyCode != KeyEvent.KEYCODE_VOLUME_DOWN) return false
   EventLog.record("ACCESSIBILITY", event)
-  if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-   when(event.action) {
-    KeyEvent.ACTION_DOWN -> if (!volumeDownHeld) {
-     volumeDownHeld = true
-     EventLog.recordStatus("ORBIT held=true (diagnostic only; Shift NOT injected)")
-    }
-    KeyEvent.ACTION_UP -> release("volume down released")
-   }
+  // This is an experimental IME transport, not system-wide key injection.
+  // Do not consume the physical key unless InputConnection accepted the event.
+  if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0 &&
+      currentPackage == "com.microsoft.rdc.androidx") {
+   val sent = OrbitIme.shift(true)
+   volumeDownHeld = sent
+   EventLog.recordStatus("ORBIT press accepted=$sent")
+   return sent
   }
-  // Do not swallow volume keys until a working Shift transport exists.
-  return false
+  if (event.action == KeyEvent.ACTION_UP && volumeDownHeld) {
+   val sent = OrbitIme.shift(false)
+   volumeDownHeld = false
+   EventLog.recordStatus("ORBIT release accepted=$sent")
+   return true
+  }
+  return volumeDownHeld
  }
 }
